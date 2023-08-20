@@ -7,8 +7,13 @@ export const register = async (
   const { username, email, fullname, password } = req.body;
   try {
     // Create a new user using the User model
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.json({
+        message: "User already exist",
+      });
+    }
     await User.create({ username, email, fullname, password });
-
     return res.json({
       message: "User Created",
     });
@@ -31,7 +36,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     if (user && (await user.matchPassword(password))) {
       return res.json({ data: user, message: "User login sucessfully" });
     }
-    return res.json({ message: "Error creating user" });
+    return res.json({ message: "username or password not match" });
   } catch (error) {
     console.error("Error registering user:", error);
     return res.status(500).json({

@@ -4,8 +4,14 @@ import {
   login,
   register,
 } from "../controller/auth/auth.controller";
-const router = Router(); //
+import { getChat } from "../controller/chat/chat.controller";
+import { findRoom } from "../controller/room/room.controller";
 
+const router = Router(); //
 router.post("/register", register);
-router.router("/login", login);
-router.router("/users", getAllUser);
+router.post("/login", login);
+router.get("/users", getAllUser);
+router.get("/chat-list", getChat);
+router.post("/list-room", findRoom);
+
+export { router };

@@ -8,7 +8,7 @@ export interface IChat extends Document {
   date: string;
 }
 
-const ChatSchema = new Schema<IChat>(
+const ChatSchema = new Schema(
   {
     messageBy: {
       type: Schema.Types.ObjectId,
@@ -24,8 +24,12 @@ const ChatSchema = new Schema<IChat>(
     date: {
       type: String,
     },
+    roomId: {
+      type: Schema.Types.ObjectId,
+      ref: "Room",
+    },
   },
   { timestamps: true }
 );
 
-export const Chat = model<IChat>("Chat", ChatSchema);
+export const Chat = model("Chat", ChatSchema);

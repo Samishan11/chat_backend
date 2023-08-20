@@ -1,5 +1,6 @@
 import { Schema, model, Document, ObjectId } from "mongoose";
 import bcrypt from "bcrypt";
+import { NextFunction } from "express";
 
 export interface IUser extends Document {
   _id: ObjectId;
@@ -25,16 +26,17 @@ const UserSchema = new Schema<IUser>(
       ],
     },
     password: { type: String, require: true },
-  }
+  },
   { timestamps: true }
 );
 
-
-UserSchema.methods.matchPassword = async function (password) {
+UserSchema.methods.matchPassword = async function (
+  password: string
+): Promise<boolean> {
   return await bcrypt.compare(password, this.password);
 };
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre<IUser>("save", async function (next: any) {
   if (!this.isModified("password")) {
     return next();
   }
@@ -47,5 +49,20 @@ UserSchema.pre("save", async function (next) {
     next(error);
   }
 });
+
+// UserSchema.pre("save", async function (next: any) {
+//   const user = this;
+
+//   if (!user.isModified("password")) next();
+
+//   bcrypt.genSalt(10, (err: any, salt: string) => {
+//     if (err) return next(err);
+//     bcrypt.hash(user.password, salt, (err: any, hash: string) => {
+//       if (err) return next(err);
+//       user.password = hash;
+//       next();
+//     });
+//   });
+// });
 
 export const User = model<IUser>("User", UserSchema);
