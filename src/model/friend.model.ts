@@ -2,27 +2,27 @@ import { Schema, model, Document, ObjectId } from "mongoose";
 
 export interface IChat extends Document {
   _id: ObjectId;
-  requestBy: ObjectId;
-  requestTo: ObjectId;
-  isAccepted: boolean;
+  aurthor: ObjectId;
+  friend: ObjectId;
   date: string;
+  roomId: ObjectId;
 }
 
-const FriendReuqestSchema = new Schema<IChat>(
+const FriendModel = new Schema<IChat>(
   {
-    requestBy: {
+    aurthor: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    requestTo: {
+    friend: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    isAccepted: {
-      type: Boolean,
-      default: false,
+    roomId: {
+      type: Schema.Types.ObjectId,
+      ref: "Room",
     },
     date: {
       type: String,
@@ -32,4 +32,4 @@ const FriendReuqestSchema = new Schema<IChat>(
   { timestamps: true }
 );
 
-export const FriendRequest = model<IChat>("FriendRequest", FriendReuqestSchema);
+export const Friend = model<IChat>("Friend", FriendModel);

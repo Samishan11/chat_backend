@@ -8,7 +8,7 @@ export const findRoom = async (
   try {
     const { users } = req.body;
     const room = await Room.findOne({
-      users: { $in: users },
+      users: { $all: users },
     });
     return res.json({ data: room });
   } catch (error: any) {

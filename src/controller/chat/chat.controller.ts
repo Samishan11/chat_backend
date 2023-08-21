@@ -6,7 +6,7 @@ export const getChat = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { roomId } = req.body;
+    const { roomId } = req.query;
     const findmessage = await Chat.find({ roomId });
     return res.json({ data: findmessage });
   } catch (error) {
