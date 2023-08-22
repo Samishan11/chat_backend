@@ -5,6 +5,7 @@ import { FriendRequest } from "../../model/friendRequest.model";
 
 export const requestFriendSocket = async (socket: Socket) => {
   socket.on("send-request", async (data: any) => {
+    if (!data) return;
     const { requestBy, requestTo } = data;
     const room = await Room.findOne({
       users: { $all: [requestBy, requestTo] },
@@ -24,5 +25,23 @@ export const requestFriendSocket = async (socket: Socket) => {
       });
       await createRoom.save();
     }
+  });
+
+  socket.on("accept-request", async (data) => {
+    if (!data) return;
+    const { requestBy, requestTo } = data;
+
+    const request = await FriendRequest.findOne({
+      $or: [
+        { requestBy, requestTo },
+        { requestBy: requestTo, requestTo: requestBy },
+      ],
+    });
+    console.log(data);
+    console.log(request);
+
+    if (!request) return;
+    request.isAccepted = true;
+    await request.save();
   });
 };

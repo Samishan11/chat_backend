@@ -30,6 +30,7 @@ export class SocketSetUp {
 
       //  remove duplicate
       const removeDuplicateUser = [...new Set(user)];
+      // show all online users
       socket.emit("onlineUsers", removeDuplicateUser);
 
       // chat socket

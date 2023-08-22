@@ -6,7 +6,10 @@ import {
 } from "../controller/auth/auth.controller";
 import { getChat } from "../controller/chat/chat.controller";
 import { findRoom } from "../controller/room/room.controller";
-import { listRequest } from "../controller/requestFriend/requestFriend.controller";
+import {
+  listFriend,
+  listPendingRequest,
+} from "../controller/requestFriend/requestFriend.controller";
 
 const router = Router();
 // user
@@ -18,6 +21,7 @@ router.get("/chat-list", getChat);
 //  room
 router.post("/list-room", findRoom);
 // request
-router.get("/list-request", listRequest);
+router.get("/list-request", listPendingRequest);
+router.get("/list-friend", listFriend);
 
 export { router };

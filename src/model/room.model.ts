@@ -11,7 +11,7 @@ const roomSchema = new Schema<IRoom>(
     users: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User", // Reference the "User" schema if applicable
+        ref: "User", 
         required: true,
       },
     ],
