@@ -18,13 +18,6 @@ export const requestFriendSocket = async (socket: Socket) => {
       date: new Date().toDateString(),
     });
     await sendRequest.save();
-    if (sendRequest) {
-      const createRoom = new Room({
-        users: [requestBy, requestTo],
-        isGroup: false,
-      });
-      await createRoom.save();
-    }
   });
 
   socket.on("accept-request", async (data) => {
@@ -37,11 +30,14 @@ export const requestFriendSocket = async (socket: Socket) => {
         { requestBy: requestTo, requestTo: requestBy },
       ],
     });
-    console.log(data);
-    console.log(request);
-
     if (!request) return;
+    const createRoom = new Room({
+      users: [requestBy, requestTo],
+      isGroup: false,
+    });
+    await createRoom.save();
     request.isAccepted = true;
+    request.roomId = createRoom._id;
     await request.save();
   });
 };

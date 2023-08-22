@@ -6,6 +6,7 @@ export interface IChat extends Document {
   requestTo: ObjectId;
   isAccepted: boolean;
   date: string;
+  roomId: ObjectId;
 }
 
 const FriendReuqestSchema = new Schema<IChat>(
@@ -19,6 +20,10 @@ const FriendReuqestSchema = new Schema<IChat>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    roomId: {
+      type: Schema.Types.ObjectId,
+      ref: "Room",
     },
     isAccepted: {
       type: Boolean,
