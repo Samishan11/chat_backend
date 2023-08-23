@@ -2,39 +2,39 @@ import { Schema, model, Document, ObjectId } from "mongoose";
 
 export interface IChat extends Document {
   _id: ObjectId;
-  requestBy: ObjectId;
-  requestTo: ObjectId;
-  isAccepted: boolean;
+  notificationBy: ObjectId;
+  notificationTo: ObjectId;
+  notification: string;
+  isSeen: boolean;
   date: Date;
-  roomId: ObjectId;
 }
 
-const FriendReuqestSchema = new Schema<IChat>(
+const NotificationSchema = new Schema<IChat>(
   {
-    requestBy: {
+    notificationBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    requestTo: {
+    notificationTo: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    roomId: {
-      type: Schema.Types.ObjectId,
-      ref: "Room",
+    notification: {
+      type: String,
+      required: true,
     },
-    isAccepted: {
+    isSeen: {
       type: Boolean,
       default: false,
     },
     date: {
       type: Date,
-      required: true,
+      default: new Date(),
     },
   },
   { timestamps: true }
 );
 
-export const FriendRequest = model<IChat>("FriendRequest", FriendReuqestSchema);
+export const Notification = model<IChat>("Notification", NotificationSchema);

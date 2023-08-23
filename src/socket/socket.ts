@@ -24,22 +24,33 @@ export class SocketSetUp {
         socket: socket,
       });
 
+      const newUser = new Map();
+
+      newUser.set(socket.id, {
+        userId: userId,
+        socket: socket,
+      });
+
       const user = Array.from(connectedUsers.values()).map(
         (data: any) => data.userId
       );
-
-      //  remove duplicate
-      const removeDuplicateUser = [...new Set(user)];
       // show all online users
-      socket.emit("onlineUsers", removeDuplicateUser);
+      this.io.emit("onlineUsers", [...new Set(user)]);
 
       // chat socket
       chatSocket(socket, connectedUsers);
+      //  room socket
       roomSocket(socket);
-      requestFriendSocket(socket);
+      //  request socket
+      requestFriendSocket(socket, connectedUsers);
 
       //   socket disconnect here
       socket.on("disconnect", () => {
+        connectedUsers.delete(socket.id);
+        const user = Array.from(connectedUsers.values()).map(
+          (data: any) => data.userId
+        );
+        this.io.emit("onlineUsers", user);
         console.log("User disconnected");
       });
     });

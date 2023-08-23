@@ -5,7 +5,6 @@ import { Room } from "../../model/room.model";
 export const chatSocket = async (socket: Socket, connectedUsers: any) => {
   socket.on("chat", async ({ data }: any) => {
     const { messageBy, messageTo, roomId, message } = data;
-    console.log(data)
     //  find if they have already chat or not
     const findmessage = await Chat.findOne({ roomId });
     const room = await Room.findOne({ _id: roomId });

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../../model/user.model";
+import { generateAccessToken } from "../../middlware/auth.middleware";
 export const register = async (
   req: Request,
   res: Response
@@ -34,7 +35,12 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     }
 
     if (user && (await user.matchPassword(password))) {
-      return res.json({ data: user, message: "User login sucessfully" });
+      var token = await generateAccessToken({ data: user });
+      return res.json({
+        data: user,
+        message: "User login sucessfully",
+        token,
+      });
     }
     return res.json({ message: "username or password not match" });
   } catch (error) {
