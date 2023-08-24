@@ -15,10 +15,3 @@ export const getChat = async (
     });
   }
 };
-
-// const findmessage = await Chat.find({
-//     $or: [
-//       { messageBy, messageTo },
-//       { messageBy: messageTo, messageTo: messageBy },
-//     ],
-//   });

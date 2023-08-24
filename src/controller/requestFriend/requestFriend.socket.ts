@@ -11,7 +11,6 @@ export const requestFriendSocket = async (
 ) => {
   //  send request
   socket.on("send-request", async (data: any) => {
-    console.log("send");
     try {
       if (!data) return;
       const { requestBy, requestTo } = data;
@@ -42,12 +41,6 @@ export const requestFriendSocket = async (
           date: new Date(),
         };
         var notification = await new Notification(data).save();
-        // const matchingUsers = Array.from(connectedUsers.values()).find(
-        //   (user: any) => user.userId === requestTo
-        // );
-        // if (!matchingUsers) return;
-        // matchingUsers.emit("get-notification", data);
-
         const matchingUsers = Array.from(connectedUsers.values()).filter(
           (user: any) => user.userId === requestTo
         );
@@ -57,14 +50,12 @@ export const requestFriendSocket = async (
         });
       }
     } catch (error: any) {
-      console.log("error");
       console.log(error.message);
     }
   });
 
   //  accept request
   socket.on("accept-request", async (data) => {
-    console.log("accept");
     try {
       if (!data) return;
       const { requestBy, requestTo } = data;
@@ -94,11 +85,7 @@ export const requestFriendSocket = async (
           date: new Date(),
         };
         var notification = await new Notification(data).save();
-        // const matchingUsers = Array.from(connectedUsers.values()).find(
-        //   (user: any) => user.userId === requestTo
-        // );
-        // if (!matchingUsers) return;
-        // matchingUsers.emit("get-notification", data);
+
         const matchingUsers = Array.from(connectedUsers.values()).filter(
           (user: any) => user.userId === requestBy
         );

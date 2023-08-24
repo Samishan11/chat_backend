@@ -5,7 +5,7 @@ export interface IChat extends Document {
   messageBy: ObjectId;
   messageTo: ObjectId;
   message: string;
-  date: string;
+  date: Date;
 }
 
 const ChatSchema = new Schema(
@@ -25,7 +25,8 @@ const ChatSchema = new Schema(
       type: String,
     },
     date: {
-      type: String,
+      type: Date,
+      required: true,
     },
     roomId: {
       type: Schema.Types.ObjectId,

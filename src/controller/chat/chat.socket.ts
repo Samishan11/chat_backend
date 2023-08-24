@@ -18,20 +18,17 @@ export const chatSocket = async (socket: Socket, connectedUsers: any) => {
     // Save the image in the uploaded_images directory
     console.log(image);
     if (!image) {
-      console.log("first");
       const createChat = new Chat({
         messageBy: messageBy,
         messageTo: messageTo,
         message: message,
         roomId: roomId,
-        date: new Date().toDateString(),
+        date: new Date(),
       });
-
       await createChat.save();
 
       socket.to(roomId).emit("message", createChat);
     } else {
-      console.log("second");
       const imageName = `image_${Date.now()}.jpg`;
       const imagePath = path.join(uploadDir, imageName);
       writeFileSync(imagePath, image);
@@ -42,9 +39,8 @@ export const chatSocket = async (socket: Socket, connectedUsers: any) => {
         message: message,
         image: imageName,
         roomId: roomId,
-        date: new Date().toDateString(),
+        date: new Date(),
       });
-
       await createChat.save();
 
       socket.to(roomId).emit("message", createChat);

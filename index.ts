@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Express, json, urlencoded } from "express";
 import cors from "cors";
 import { Server } from "socket.io";
@@ -7,7 +9,6 @@ import { router } from "./src/route/routes";
 import { connectDB } from "./src/connection/database";
 import fileupload from "express-fileupload";
 import path from "path";
-
 connectDB();
 const app: Express = express();
 const server = http.createServer(app);
@@ -21,16 +22,19 @@ app.use(
 );
 
 app.use("/api", router);
+const CLIENT_URI = process.env.CLIENT_URI;
+const PORT = process.env.PORT;
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URI,
     methods: ["GET", "POST", "DELETE", "PUT"],
     // credentials: true,
   },
 });
+
 new SocketSetUp(io);
 
-server.listen(5000, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${5000}`);
+server.listen(PORT, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });
