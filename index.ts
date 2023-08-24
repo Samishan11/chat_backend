@@ -5,12 +5,21 @@ import http from "http";
 import { SocketSetUp } from "./src/socket/socket";
 import { router } from "./src/route/routes";
 import { connectDB } from "./src/connection/database";
+import fileupload from "express-fileupload";
+import path from "path";
+
 connectDB();
 const app: Express = express();
 const server = http.createServer(app);
+app.use(cors());
 app.use(json());
 app.use(urlencoded());
-app.use(cors());
+app.use(fileupload({ useTempFiles: true }));
+app.use(
+  "/uploaded_images",
+  express.static(path.join(__dirname, "uploaded_images"))
+);
+
 app.use("/api", router);
 
 const io = new Server(server, {

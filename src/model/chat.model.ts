@@ -21,6 +21,9 @@ const ChatSchema = new Schema(
     message: {
       type: String,
     },
+    image: {
+      type: String,
+    },
     date: {
       type: String,
     },
