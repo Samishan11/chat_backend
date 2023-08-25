@@ -4,6 +4,7 @@ import { Room } from "../../model/room.model";
 import { FriendRequest } from "../../model/friendRequest.model";
 import { User } from "../../model/user.model";
 import { Notification } from "../../model/notification.model";
+import { ObjectId } from "mongoose";
 
 export const requestFriendSocket = async (
   socket: Socket,
@@ -98,4 +99,68 @@ export const requestFriendSocket = async (
       console.log(error.message);
     }
   });
+
+  //  delete friend
+  socket.on(
+    "remove-friend",
+    async (data: {
+      id: ObjectId;
+      roomId: ObjectId;
+      user: ObjectId;
+      friend: ObjectId;
+    }) => {
+      const { id, roomId, user, friend } = data;
+      const deleteFriend = await FriendRequest.findByIdAndDelete({ _id: id });
+      const deleteChat = await Chat.findByIdAndDelete({ roomId: roomId });
+      const deleteRoom = await Room.findByIdAndDelete({ _id: roomId });
+
+      // myself
+      const listMyFriend = await FriendRequest.find({
+        $or: [
+          {
+            requestTo: user,
+          },
+          { requestBy: user },
+        ],
+        isAccepted: true,
+      })
+        .populate("requestBy")
+        .populate("requestTo");
+
+      const socketname = "get-friend";
+      emitSocket(connectedUsers, user, socketname, listMyFriend);
+      //  friend
+      const listFriend = await FriendRequest.find({
+        $or: [
+          {
+            requestTo: friend,
+          },
+          { requestBy: friend },
+        ],
+        isAccepted: true,
+      })
+        .populate("requestBy")
+        .populate("requestTo");
+      emitSocket(connectedUsers, friend, socketname, listFriend);
+    }
+  );
 };
+
+async function emitSocket(
+  connectedUsers: any,
+  userId: ObjectId,
+  socketname: string,
+  data: any
+) {
+  const matchingUsers = Array.from(connectedUsers.values()).filter(
+    (user: any) => user.userId === userId
+  );
+  if (matchingUsers?.length > 0) {
+    matchingUsers.forEach((user: any) => {
+      const receiverSocket = user.socket;
+      receiverSocket.emit(socketname, data);
+    });
+    return;
+  }
+  return;
+}
