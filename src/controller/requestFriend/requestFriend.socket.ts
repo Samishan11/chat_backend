@@ -13,6 +13,7 @@ export const requestFriendSocket = async (
   //  send request
   socket.on("send-request", async (data: any) => {
     try {
+      console.log("data");
       if (!data) return;
       const { requestBy, requestTo } = data;
       const room = await Room.findOne({

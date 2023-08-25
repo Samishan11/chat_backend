@@ -16,7 +16,6 @@ export const chatSocket = async (socket: Socket, connectedUsers: any) => {
     }
 
     // Save the image in the uploaded_images directory
-    console.log(image);
     if (!image) {
       const createChat = new Chat({
         messageBy: messageBy,
