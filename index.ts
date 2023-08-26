@@ -9,6 +9,7 @@ import { router } from "./src/route/routes";
 import { connectDB } from "./src/connection/database";
 import fileupload from "express-fileupload";
 import path from "path";
+import { getFriendsOfFriendsRecommendations } from "./src/controller/recomendation/user.recomendation";
 connectDB();
 const app: Express = express();
 const server = http.createServer(app);
@@ -24,10 +25,9 @@ app.use(
 app.use("/api", router);
 const CLIENT_URI = process.env.CLIENT_URI;
 const PORT = process.env.PORT;
-
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URI,
+    origin: CLIENT_URI,
     methods: ["GET", "POST", "DELETE", "PUT"],
     // credentials: true,
   },

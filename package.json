@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.ts",
-    "dev": "nodemon index.ts"
+    "dev": "nodemon index.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,7 @@
   "author": "Samishan",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow/tfjs": "^4.10.0",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.2",
     "bcrypt": "^5.1.1",

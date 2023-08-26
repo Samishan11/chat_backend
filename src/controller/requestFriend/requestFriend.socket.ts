@@ -13,7 +13,6 @@ export const requestFriendSocket = async (
   //  send request
   socket.on("send-request", async (data: any) => {
     try {
-      console.log("data");
       if (!data) return;
       const { requestBy, requestTo } = data;
       const room = await Room.findOne({
@@ -34,7 +33,6 @@ export const requestFriendSocket = async (
       });
       await sendRequest.save();
       const user = await User.findOne({ _id: requestBy });
-      console.log(user);
       if (sendRequest) {
         const data = {
           notificationBy: requestBy,
@@ -51,9 +49,7 @@ export const requestFriendSocket = async (
           receiverSocket.emit("get-notification", data);
         });
       }
-    } catch (error: any) {
-      console.log(error.message);
-    }
+    } catch (error: any) {}
   });
 
   //  accept request
@@ -102,17 +98,12 @@ export const requestFriendSocket = async (
   });
 
   //  delete friend
-  socket.on(
-    "remove-friend",
-    async (data: {
-      id: ObjectId;
-      roomId: ObjectId;
-      user: ObjectId;
-      friend: ObjectId;
-    }) => {
+  socket.on("remove-friend", async (data: any) => {
+    try {
       const { id, roomId, user, friend } = data;
+      console.log("data", data);
       const deleteFriend = await FriendRequest.findByIdAndDelete({ _id: id });
-      const deleteChat = await Chat.findByIdAndDelete({ roomId: roomId });
+      const deleteChat = await Chat.deleteMany({ roomId: roomId });
       const deleteRoom = await Room.findByIdAndDelete({ _id: roomId });
 
       // myself
@@ -143,25 +134,44 @@ export const requestFriendSocket = async (
         .populate("requestBy")
         .populate("requestTo");
       emitSocket(connectedUsers, friend, socketname, listFriend);
+    } catch (error: any) {
+      console.log(error.message);
     }
-  );
+  });
 };
 
+// async function emitSocket(
+//   connectedUsers: any,
+//   userId: ObjectId,
+//   socketname: string,
+//   data: any
+// ) {
+//   const matchingUsers = Array.from(connectedUsers.values()).find(
+//     (user: any) => user.userId === userId
+//   );
+//   if (matchingUsers?.length > 0) {
+//     matchingUsers.forEach((user: any) => {
+//       const receiverSocket = user.socket;
+//       console.log(receiverSocket);
+//       receiverSocket.emit(socketname, data);
+//     });
+//     return;
+//   }
+//   return;
+// }
+
 async function emitSocket(
-  connectedUsers: any,
+  connectedUsers: Map<any, any>,
   userId: ObjectId,
   socketname: string,
   data: any
 ) {
-  const matchingUsers = Array.from(connectedUsers.values()).filter(
+  const matchingUser = Array.from(connectedUsers.values()).find(
     (user: any) => user.userId === userId
   );
-  if (matchingUsers?.length > 0) {
-    matchingUsers.forEach((user: any) => {
-      const receiverSocket = user.socket;
-      receiverSocket.emit(socketname, data);
-    });
-    return;
+
+  if (matchingUser) {
+    const receiverSocket = matchingUser.socket;
+    receiverSocket.emit(socketname, data);
   }
-  return;
 }
