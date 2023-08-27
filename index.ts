@@ -28,7 +28,7 @@ app.use("/api", router);
 const PORT = process.env.PORT;
 const io = new Server(server, {
   cors: {
-    // origin: CLIENT_URI,
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   },
