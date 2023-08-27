@@ -14,16 +14,13 @@ const NotificationSchema = new Schema<IChat>(
     notificationBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     notificationTo: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     notification: {
       type: String,
-      required: true,
     },
     isSeen: {
       type: Boolean,

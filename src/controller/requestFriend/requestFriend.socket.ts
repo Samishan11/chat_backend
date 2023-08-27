@@ -20,8 +20,8 @@ export const requestFriendSocket = async (
       });
       const request = await FriendRequest.findOne({
         $or: [
-          { requestBy: requestBy, requestTo: requestBy },
-          { requestBy: requestTo, requestTo: requestTo },
+          { requestBy: requestBy, requestTo: requestTo },
+          { requestBy: requestTo, requestTo: requestBy },
         ],
       });
       if (room || request) return;
@@ -33,27 +33,23 @@ export const requestFriendSocket = async (
       });
       await sendRequest.save();
       const user = await User.findOne({ _id: requestBy });
+      const noti: any = {
+        notificationBy: requestBy,
+        notificationTo: requestTo,
+        notification: `${user?.fullname} has send you a friend request.`,
+        date: new Date(),
+      };
       if (sendRequest) {
-        const data = {
-          notificationBy: requestBy,
-          notificationTo: requestTo,
-          notification: `${user?.fullname} has send you a friend request.`,
-          date: new Date(),
-        };
         var notification = await new Notification(data).save();
-        const matchingUsers = Array.from(connectedUsers.values()).filter(
-          (user: any) => user.userId === requestTo
-        );
-        matchingUsers.forEach((user: any) => {
-          const receiverSocket = user.socket;
-          receiverSocket.emit("get-notification", data);
-        });
+        emitSocket(connectedUsers, requestTo, "get-notification", noti);
       }
-    } catch (error: any) {}
+    } catch (error: any) {
+      console.log(error.message);
+    }
   });
 
   //  accept request
-  socket.on("accept-request", async (data) => {
+  socket.on("accept-request", async (data: any) => {
     try {
       if (!data) return;
       const { requestBy, requestTo } = data;
@@ -76,21 +72,15 @@ export const requestFriendSocket = async (
       request.roomId = createRoom._id;
       await request.save();
       if (createRoom) {
-        const data = {
+        const noti: any = {
           notificationBy: requestTo,
           notificationTo: requestBy,
           notification: `${user?.fullname} has accept your friend request.`,
           date: new Date(),
         };
-        var notification = await new Notification(data).save();
+        var notification = await new Notification(noti).save();
 
-        const matchingUsers = Array.from(connectedUsers.values()).filter(
-          (user: any) => user.userId === requestBy
-        );
-        matchingUsers.forEach((user: any) => {
-          const receiverSocket = user.socket;
-          receiverSocket.emit("get-notification", data);
-        });
+        emitSocket(connectedUsers, requestBy, "get-notification", noti);
       }
     } catch (error: any) {
       console.log(error.message);
@@ -101,11 +91,15 @@ export const requestFriendSocket = async (
   socket.on("remove-friend", async (data: any) => {
     try {
       const { id, roomId, user, friend } = data;
-      console.log("data", data);
-      const deleteFriend = await FriendRequest.findByIdAndDelete({ _id: id });
-      const deleteChat = await Chat.deleteMany({ roomId: roomId });
-      const deleteRoom = await Room.findByIdAndDelete({ _id: roomId });
-
+      await FriendRequest.findByIdAndDelete({ _id: id });
+      await Chat.deleteMany({ roomId: roomId });
+      await Room.findByIdAndDelete({ _id: roomId });
+      await Notification.deleteMany({
+        $or: [
+          { notificationBy: user, notificationTo: friend },
+          { notificationBy: friend, notificationTo: user },
+        ],
+      });
       // myself
       const listMyFriend = await FriendRequest.find({
         $or: [
@@ -140,26 +134,6 @@ export const requestFriendSocket = async (
   });
 };
 
-// async function emitSocket(
-//   connectedUsers: any,
-//   userId: ObjectId,
-//   socketname: string,
-//   data: any
-// ) {
-//   const matchingUsers = Array.from(connectedUsers.values()).find(
-//     (user: any) => user.userId === userId
-//   );
-//   if (matchingUsers?.length > 0) {
-//     matchingUsers.forEach((user: any) => {
-//       const receiverSocket = user.socket;
-//       console.log(receiverSocket);
-//       receiverSocket.emit(socketname, data);
-//     });
-//     return;
-//   }
-//   return;
-// }
-
 async function emitSocket(
   connectedUsers: Map<any, any>,
   userId: ObjectId,
@@ -169,7 +143,6 @@ async function emitSocket(
   const matchingUser = Array.from(connectedUsers.values()).find(
     (user: any) => user.userId === userId
   );
-
   if (matchingUser) {
     const receiverSocket = matchingUser.socket;
     receiverSocket.emit(socketname, data);
