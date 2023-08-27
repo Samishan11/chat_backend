@@ -28,7 +28,7 @@ app.use("/api", router);
 const PORT = process.env.PORT;
 const io = new Server(server, {
   cors: {
-    origin: ['https://chat-frontend-indol.vercel.app'],
+    origin: ['http://localhost:5173', 'https://chat-frontend-indol.vercel.app'],
   },
 });
 
