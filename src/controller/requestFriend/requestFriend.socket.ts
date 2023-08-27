@@ -40,8 +40,14 @@ export const requestFriendSocket = async (
         date: new Date(),
       };
       if (sendRequest) {
-        var notification = await new Notification(data).save();
+        var notification = await new Notification(noti).save();
         emitSocket(connectedUsers, requestTo, "get-notification", noti);
+
+        const listRequest = await FriendRequest.find({
+          requestTo,
+          isAccepted: false,
+        }).populate("requestBy");
+        emitSocket(connectedUsers, requestTo, "list-request", listRequest);
       }
     } catch (error: any) {
       console.log(error.message);
@@ -81,6 +87,22 @@ export const requestFriendSocket = async (
         var notification = await new Notification(noti).save();
 
         emitSocket(connectedUsers, requestBy, "get-notification", noti);
+
+        //  list new user
+        const listUser = await FriendRequest.find({
+          $or: [
+            {
+              requestTo: requestBy,
+            },
+            { requestBy },
+          ],
+          isAccepted: true,
+        })
+          .populate("requestBy")
+          .populate("requestTo");
+
+        emitSocket(connectedUsers, requestBy, "get-friend", listUser);
+        emitSocket(connectedUsers, requestTo, "get-friend", listUser);
       }
     } catch (error: any) {
       console.log(error.message);
