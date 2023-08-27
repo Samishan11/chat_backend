@@ -29,8 +29,6 @@ const PORT = process.env.PORT;
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    credentials: false,
   },
 });
 
