@@ -88,6 +88,15 @@ export const requestFriendSocket = async (
 
         emitSocket(connectedUsers, requestBy, "get-notification", noti);
 
+        //  list request
+        //
+        const listRequest = await FriendRequest.find({
+          requestTo,
+          isAccepted: false,
+        }).populate("requestBy");
+
+        emitSocket(connectedUsers, requestTo, "list-request", listRequest);
+
         //  list new user
         const listUser = await FriendRequest.find({
           $or: [
@@ -136,7 +145,9 @@ export const requestFriendSocket = async (
         .populate("requestTo");
 
       const socketname = "get-friend";
+
       emitSocket(connectedUsers, user, socketname, listMyFriend);
+
       //  friend
       const listFriend = await FriendRequest.find({
         $or: [
@@ -149,6 +160,7 @@ export const requestFriendSocket = async (
       })
         .populate("requestBy")
         .populate("requestTo");
+
       emitSocket(connectedUsers, friend, socketname, listFriend);
     } catch (error: any) {
       console.log(error.message);
