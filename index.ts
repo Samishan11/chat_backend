@@ -24,11 +24,11 @@ app.use(
 
 app.use("/api", router);
 // const CLIENT_URI = "https://chat-frontend-indol.vercel.app";
-const CLIENT_URI = process.env.CLIENT_URI;
+// const CLIENT_URI = process.env.CLIENT_URI;
 const PORT = process.env.PORT;
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URI,
+    // origin: CLIENT_URI,
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   },
