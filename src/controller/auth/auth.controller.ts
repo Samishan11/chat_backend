@@ -57,8 +57,8 @@ export const getAllUser = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { _id } = req.user;
-
+    if (!req?.user) return res.json({ message: "user not found" });
+    const { _id } = req?.user;
     const users = await User.find({
       _id: {
         $ne: _id,

@@ -121,6 +121,7 @@ export const requestFriendSocket = async (
   //  delete friend
   socket.on("remove-friend", async (data: any) => {
     try {
+      if(!data) return
       const { id, roomId, user, friend } = data;
       await FriendRequest.findByIdAndDelete({ _id: id });
       await Chat.deleteMany({ roomId: roomId });
